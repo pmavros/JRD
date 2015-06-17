@@ -26,14 +26,15 @@ public void setupUI(){
             
   // add a horizontal sliders, the value of this slider will be linked
   // to variable 'sliderValue' 
-  cp5.addSlider("Very_Familiar")
+  cp5.addSlider("Direction")
     .setId(4)
-    .setPosition(50, h-150)
-    .setSize(200, 20)
-    .setRange(0, 7)
-    .setValue(3.5)
-    .setNumberOfTickMarks(7)
-    .setTriggerEvent(Slider.RELEASE)
+    .setPosition(20, 20)
+    .setSize(w-40, 20)
+    .setRange(0, 359.9)
+    .setValue(180)
+//    .setTriggerEvent(Slider.RELEASE)
+     .setSliderMode(Slider.FLEXIBLE)
+     .setLabelVisible(false)
     .snapToTickMarks(false)
     .setVisible(false)
     ;

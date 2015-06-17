@@ -31,36 +31,58 @@ int slider_knob_x =0, slider_knob_y= 0;
 int lastMouseX = w/2;
 PrintWriter output;
 float theta;
+String [] combinations;
+Trial [] locations = new Trial[21];
 
 
 void setup() {
   size(w, h);
+  smooth();
+  
+  
   textAlign(LEFT, TOP);
-
 
   cp5 = new ControlP5(this);
 
+  // setup key-press combination to exit program
+  // this is to prevent accidental exit
   cp5.mapKeyFor(new ControlKey() {public void keyEvent() {
       dataCollectionFinished();
     }
   }, ALT, SHIFT, 'd', ENTER);
 
- setupUI();
+   setupUI();
+ 
+ 
+  location_A = "CASA";
+  location_B = "Warren Street Station";
+  location_C = "Kings Cross Station";
 
+  start();
+  
+  for(int i=0; i<trial.length; i++){
+//    print("charat ");
+//    print(trial[i].substring(0,1));
+//    print(" ");
+//    println(int(trial[i].substring(0,1)));    
+      locations[i] = new Trial(int(trial[i].substring(0,1)), int(trial[i].substring(1,2)), int(trial[i].substring(2,3))); 
+  }
+ 
 
 }
 
 void draw() {
   background(0);
-    showTest();
-    slider();
+    
+    
 
   
-//  if (participant_ID!=null) {
-//    showTest();
-//  } else {
-//    showStart();
-//  }
+  if (participant_ID!=null) {
+    showTest();
+    
+  } else {
+    showStart();
+  }
 }
 
 
@@ -75,26 +97,7 @@ void keyPressed() {
 
 
 
-void log (String thisLog) {
 
-  output.println(thisLog);
-  output.flush(); // Writes the remaining data to the file
-}
-
-void dataCollectionFinished() {
-  
-  if(recording){
-    
-    String j = "stop,"+ "NA" +", NA,"+ millis() +","+  System.currentTimeMillis();
-    log(j);  // Write data to the file
-  
-    output.flush();  // Writes the remaining data to the file
-    output.close();  // Finishes the file
-    exit();  // Stops the program
-  } else {
-    exit();  // Stops the program
-  }
-}
 
 // let's set a filter (which returns true if file's extension is .jpg)
 java.io.FilenameFilter jpgFilter = new java.io.FilenameFilter() {
@@ -103,6 +106,28 @@ java.io.FilenameFilter jpgFilter = new java.io.FilenameFilter() {
   }
 };
 
+public void OK() {
+
+  String inputText = cp5.get(Textfield.class, "Participant_ID").getText();
+
+  if (inputText!=null && inputText!="") {
+    participant_ID = inputText;
+    output = createWriter("data/"+participant_ID+"_Fitzrovia-Image-data.csv"); 
+
+    // "event, value, elapsedTimeEvent, elapsedTimefromStart, epoch"
+    String j = "start, "+participant_ID +", NA,"+ millis() +","+  System.currentTimeMillis();
+    log(j);  // Write data to the file
+    
+    cp5.get(Textfield.class, "Participant_ID").setVisible(false);
+    cp5.get(Bang.class, "clear").setVisible(false);
+    cp5.get(Bang.class, "OK").setVisible(false);
+    cp5.get(Slider.class, "Very_Familiar").setVisible(true);
+    
+    recording = true;
+  }
+
+
+}
 
 public void controlEvent(ControlEvent theEvent) {
 
@@ -122,36 +147,28 @@ public void controlEvent(ControlEvent theEvent) {
       
       case 4: 
         // release slider knob
-        if(participant_ID!=null){
-          if(!cp5.get(Button.class, "Map_OK").isVisible()){
-            String l = "select_familiarity, "+cp5.get(Slider.class, "Very_Familiar").getValue()+", "+ (millis()-startCount) +","+ millis() +","+  System.currentTimeMillis();
-            log(l);  // Write data to the file
-            cp5.get(Button.class, "Map_OK").setVisible(true);
-          } else {
-            println("slider event");
-          }
-        }
+        println(theEvent.controller().value());
+       
+        theta= theEvent.controller().value();
+        angle = theta-90;
+        //        textAlign(LEFT,TOP);
+        //        text(theta, 50,50); 
+        
         break;
       case 5:
-        // press MAP_OK button
-        println("Map OK");
-        cp5.get(Button.class, "Next").show();
-        String j = "map_ok" +", NA,"+ (millis()-startCount) +","+ millis() +","+  System.currentTimeMillis();
-        log(j);
+        // pressed DONT_KNOW button
+        // println("Map OK");
+        String h = jrdCounter+"," + "dontknow" +", "+theta +", "+ locations +","+ (millis()-startCount) +","+ millis() +","+  System.currentTimeMillis();
+        log(h);  // Write data to the file
         break;
       case 6:
-        // press Next
-//        String l = "final_familiarity, "+cp5.get(Slider.class, "Very_Familiar").getValue()+", "+ (millis()-startCount) +","+ millis() +","+  System.currentTimeMillis();
-//        log(l);  // Write data to the file
-//        
-//        //         "event, value, elapsedTimeEvent, elapsedTimefromStart, epoch"
-//        String k = "nextImage" +", NA,"+ (millis()-startCount) +","+ millis() +","+  System.currentTimeMillis();
-//        log(k);  // Write data to the file
+        // pressed Next
+        //  "counter, event, angle, locations, elapsedTimeEvent, totalElapsedTime, epoch"
+        String j = jrdCounter+"," + "next" +", "+theta +", "+ locations +","+ (millis()-startCount) +","+ millis() +","+  System.currentTimeMillis();
+        log(j);  // Write data to the file
         
         if (responded) {
-            responded = false;
             println("Next");
-            jrdCounter++;
             newTrial();
            } 
         break;
@@ -161,26 +178,38 @@ public void controlEvent(ControlEvent theEvent) {
 }
 
 void newTrial(){
-  responded = true;
+  jrdCounter++;
+  responded = false;
   angle = 0;
+  
+  // reset slider knob
   lastMouseX = w/2;
+  
+  // reset response time
   startCount = millis();
 
   cp5.get(Button.class, "Don't know").show();
   cp5.get(Button.class, "Next").hide() ;
+  cp5.get(Slider.class, "Direction").setValue(180) ;
  
-  location_A = "location A";
-  location_B = "location B";
-  location_C = "location C";
+  location_A = locations[jrdCounter].a;
+  location_B = locations[jrdCounter].b;
+  location_C = locations[jrdCounter].c;
+  
+//  locations =  location_A+"  "+ location_B+"  "+location_C;
   
   // make log
-
+  //  "coumter, event, angle, locations, elapsedTimeEvent, totalElapsedTime, epoch"
+  String k = jrdCounter+"," + "newTrial" +", NA,"+ locations +","+ 0 +","+ millis() +","+  System.currentTimeMillis();
+  log(k);  // Write data to the file
 }
 
 
 
 void showTest(){
     dial();
+//    slider();
+    cp5.get(Slider.class, "Direction").show();
   
   
   
@@ -198,7 +227,7 @@ void showTest(){
     fill(250);
     ellipse(w/2+200*cos(radians(angle)),h/2+200*sin(radians(angle)), 5, 5);
     
-    if(degrees(angle)<90){
+    if(theta<180){
       textAlign(LEFT, TOP);
     } else {
       textAlign(RIGHT, TOP);
@@ -225,6 +254,26 @@ void showStart(){
   
 }
 
+void log (String thisLog) {
+
+  output.println(thisLog);
+  output.flush(); // Writes the remaining data to the file
+}
+
+void dataCollectionFinished() {
+  
+  if(recording){
+    
+    String j = "stop,"+ "NA" +", NA,"+ millis() +","+  System.currentTimeMillis();
+    log(j);  // Write data to the file
+  
+    output.flush();  // Writes the remaining data to the file
+    output.close();  // Finishes the file
+    exit();  // Stops the program
+  } else {
+    exit();  // Stops the program
+  }
+}
 
 
 
