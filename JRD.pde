@@ -54,9 +54,9 @@ void setup() {
    setupUI();
  
  
-  location_A = "CASA";
-  location_B = "Warren Street Station";
-  location_C = "Kings Cross Station";
+  location_A = "Example: Kings Cross Station Square";
+  location_B = "Old street Roundabout";
+  location_C = "Parliement";
 
   start();
   
@@ -178,7 +178,13 @@ public void controlEvent(ControlEvent theEvent) {
 }
 
 void newTrial(){
+  
   jrdCounter++;
+  
+  if(jrdCounter > locations.length){
+    dataCollectionFinished();
+  }
+  
   responded = false;
   angle = 0;
   

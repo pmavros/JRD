@@ -23,4 +23,7 @@ public void dial(){
   textAlign(CENTER, BOTTOM);
   text("You are facing towards:", w/2, h/2-235);
   text(location_B, w/2, h/2-215);
+  
+  textAlign(LEFT, BOTTOM);
+  text((locations.length-jrdCounter)+" remaining trials", 20, h-20);
 }
