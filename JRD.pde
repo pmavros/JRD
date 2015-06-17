@@ -114,8 +114,8 @@ public void OK() {
     participant_ID = inputText;
     output = createWriter("data/"+participant_ID+"_Fitzrovia-Image-data.csv"); 
 
-    // "event, value, elapsedTimeEvent, elapsedTimefromStart, epoch"
-    String j = "start, "+participant_ID +", NA,"+ millis() +","+  System.currentTimeMillis();
+    //  "counter, event, angle, locations, elapsedTimeEvent, totalElapsedTime, epoch"
+    String j = jrdCounter+", start, "+participant_ID +", NA,"+" demo,"+ millis() +","+  System.currentTimeMillis();
     log(j);  // Write data to the file
     
     cp5.get(Textfield.class, "Participant_ID").setVisible(false);
@@ -158,13 +158,16 @@ public void controlEvent(ControlEvent theEvent) {
       case 5:
         // pressed DONT_KNOW button
         // println("Map OK");
-        String h = jrdCounter+"," + "dontknow" +", "+theta +", "+ locations +","+ (millis()-startCount) +","+ millis() +","+  System.currentTimeMillis();
+        String locationsToString =  locations[jrdCounter].a+"  "+ locations[jrdCounter].b +"  "+ locations[jrdCounter].c;
+        String h = jrdCounter+"," + "dontknow" +", "+theta +", "+ locationsToString +","+ (millis()-startCount) +","+ millis() +","+  System.currentTimeMillis();
         log(h);  // Write data to the file
         break;
       case 6:
         // pressed Next
+        
+        locationsToString =  locations[jrdCounter].a+"  "+ locations[jrdCounter].b +"  "+ locations[jrdCounter].c;
         //  "counter, event, angle, locations, elapsedTimeEvent, totalElapsedTime, epoch"
-        String j = jrdCounter+"," + "next" +", "+theta +", "+ locations +","+ (millis()-startCount) +","+ millis() +","+  System.currentTimeMillis();
+        String j = jrdCounter+"," + "next" +", "+theta +", "+ locationsToString +","+ (millis()-startCount) +","+ millis() +","+  System.currentTimeMillis();
         log(j);  // Write data to the file
         
         if (responded) {
@@ -202,11 +205,11 @@ void newTrial(){
   location_B = locations[jrdCounter].b;
   location_C = locations[jrdCounter].c;
   
-//  locations =  location_A+"  "+ location_B+"  "+location_C;
+  String locationsToString =  locations[jrdCounter].a+"  "+ locations[jrdCounter].b +"  "+ locations[jrdCounter].c;
   
   // make log
   //  "coumter, event, angle, locations, elapsedTimeEvent, totalElapsedTime, epoch"
-  String k = jrdCounter+"," + "newTrial" +", NA,"+ locations +","+ 0 +","+ millis() +","+  System.currentTimeMillis();
+  String k = jrdCounter+"," + "newTrial" +", NA,"+ locationsToString +","+ 0 +","+ millis() +","+  System.currentTimeMillis();
   log(k);  // Write data to the file
 }
 
