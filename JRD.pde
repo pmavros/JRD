@@ -230,7 +230,6 @@ void showTest(){
     stroke(200);   
   }
     
-  if(responded){
     line(w/2, h/2, w/2+200*cos(radians(angle)),h/2+200*sin(radians(angle)) );
     noStroke();
     fill(250);
@@ -243,9 +242,10 @@ void showTest(){
     }
     
     text(location_C, w/2+200*cos(radians(angle)),h/2+200*sin(radians(angle)));
-    
-     
-    
+
+
+ if(responded){
+
     cp5.get(Button.class, "Next").show();
     cp5.get(Button.class, "Don't know").show();
   } else {
